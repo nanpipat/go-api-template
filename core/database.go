@@ -3,14 +3,17 @@ package core
 import (
 	"errors"
 	"fmt"
+	"net/http"
+	"reflect"
+
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"net/http"
-	"reflect"
+
+	oracle "github.com/dzwvip/gorm-oracle"
 )
 
 type KeywordCondition string
@@ -28,6 +31,7 @@ const (
 	DatabaseDriverPOSTGRES = "postgres"
 	DatabaseDriverMSSQL    = "mssql"
 	DatabaseDriverMYSQL    = "mysql"
+	DatabaseDriverOracle   = "oracle"
 )
 
 type KeywordConditionWrapper struct {
@@ -102,6 +106,9 @@ func (db *Database) Connect() (*gorm.DB, error) {
 		dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=utc",
 			db.Host, db.User, db.Password, db.Name, db.Port)
 		newDB, err = gorm.Open(postgres.Open(dsn), db.config)
+	case DatabaseDriverOracle:
+		dsn := fmt.Sprintf("oracle://%v:%v@%v:%v/%v", db.User, db.Password, db.Host, db.Port, db.Name)
+		newDB, err = gorm.Open(oracle.Open(dsn), db.config)
 	default:
 		dsn = fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8&parseTime=True&loc=Local&multiStatements=True&loc=UTC",
 			db.User, db.Password, db.Host, db.Port, db.Name,
