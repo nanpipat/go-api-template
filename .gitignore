@@ -1,0 +1,12 @@
+.idea
+.storage
+.vscode
+.env
+tmp
+gin-bin
+node_modules
+package-lock.json
+yarn-error.log
+.DS_Store
+uc-backend
+.csv
